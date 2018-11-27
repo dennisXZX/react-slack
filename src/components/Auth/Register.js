@@ -5,10 +5,56 @@ import firebase from '../../firebase'
 
 class Register extends Component {
   state = {
-    username: '',
-    email: '',
-    password: '',
-    passwordConfirmation: ''
+    username: 'dennis',
+    email: 'dennis@gmail.com',
+    password: '123',
+    passwordConfirmation: '123',
+    errors: []
+  }
+
+  isFormValid = () => {
+    let errors = []
+    let error
+
+    if (this.isFormEmpty(this.state)) {
+      error = { message: 'Fill in all fields' }
+
+      this.setState({ errors: [...errors, error] })
+
+      return false
+    } else if (this.isPasswordLengthInvalid(this.state)) {
+      error = { message: 'Password must have at least 6 characters' }
+
+      this.setState({ errors: [...errors, error] })
+
+      return false
+    } else if (this.isTwoPasswordsNotEqual(this.state)) {
+      error = { message: 'The two passwords does not match' }
+
+      this.setState({ errors: [...errors, error] })
+
+      return false
+    } else {
+      return true
+    }
+  }
+
+  // check if any field is empty
+  // if the length of the field is 0, this function returns true
+  // which indicates a field is empty
+  isFormEmpty = ({ username, email, password, passwordConfirmation }) => {
+    return !username.length ||
+           !email.length ||
+           !password.length ||
+           !passwordConfirmation.length
+  }
+
+  isPasswordLengthInvalid = ({ password, passwordConfirmation }) => {
+    return password.length < 6 || passwordConfirmation.length < 6
+  }
+
+  isTwoPasswordsNotEqual = ({ password, passwordConfirmation }) => {
+    return password !== passwordConfirmation
   }
 
   handleChange = (event) => {
@@ -18,21 +64,34 @@ class Register extends Component {
   }
 
   handleSubmit = (event) => {
-    event.preventDefault()
+    if (this.isFormValid()) {
+      event.preventDefault()
 
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(createdUser => {
-        console.log('createdUser', createdUser)
-      })
-      .catch(err => {
-        console.log('err', err)
-      })
+      // create user account in firebase
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.state.email, this.state.password)
+        .then(createdUser => {
+          console.log('createdUser', createdUser)
+        })
+        .catch(err => {
+          console.log('err', err)
+        })
+    }
+  }
+
+  displayErrors = (errors) => {
+    return errors.map((error, i) => <p key={i}>{error.message}</p>)
   }
 
   render () {
-    const { username, email, password, passwordConfirmation } = this.state
+    const {
+      email,
+      errors,
+      password,
+      passwordConfirmation,
+      username,
+    } = this.state
 
     return (
       <Grid
@@ -96,6 +155,12 @@ class Register extends Component {
               </Button>
             </Segment>
           </Form>
+
+          {errors.length > 0 && (
+            <Message error>
+              {this.displayErrors(errors)}
+            </Message>
+          )}
 
           <Message>Already a user? <Link to='/login'>Login</Link></Message>
         </Grid.Column>
