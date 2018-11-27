@@ -1,12 +1,39 @@
 import React, { Component } from 'react'
 import { Grid, Form, Segment, Button, Header, Message, Icon } from "semantic-ui-react"
 import { Link } from 'react-router-dom'
+import firebase from '../../firebase'
 
 class Register extends Component {
-  handleChange = () => {
+  state = {
+    username: '',
+    email: '',
+    password: '',
+    passwordConfirmation: ''
+  }
+
+  handleChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value
+    })
+  }
+
+  handleSubmit = (event) => {
+    event.preventDefault()
+
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(createdUser => {
+        console.log('createdUser', createdUser)
+      })
+      .catch(err => {
+        console.log('err', err)
+      })
   }
 
   render () {
+    const { username, email, password, passwordConfirmation } = this.state
+
     return (
       <Grid
         textAlign="center"
@@ -18,7 +45,7 @@ class Register extends Component {
             Register for DevChat
           </Header>
 
-          <Form size='large'>
+          <Form onSubmit={this.handleSubmit} size='large'>
             <Segment stacked>
               {/* username filed */}
               <Form.Input
@@ -28,6 +55,7 @@ class Register extends Component {
                 icon='user'
                 iconPosition='left'
                 placeholder='Username'
+                value={username}
                 onChange={this.handleChange}/>
 
               {/* email field */}
@@ -38,6 +66,7 @@ class Register extends Component {
                 icon='mail'
                 iconPosition='left'
                 placeholder='Email Address'
+                value={email}
                 onChange={this.handleChange}/>
 
               {/* password field */}
@@ -48,6 +77,7 @@ class Register extends Component {
                 icon='lock'
                 iconPosition='left'
                 placeholder='Password'
+                value={password}
                 onChange={this.handleChange}/>
 
               {/* password confirmation field */}
@@ -58,6 +88,7 @@ class Register extends Component {
                 icon='repeat'
                 iconPosition='left'
                 placeholder='Password Confirmation'
+                value={passwordConfirmation}
                 onChange={this.handleChange}/>
 
               <Button color='orange' fluid size='large'>
