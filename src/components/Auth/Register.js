@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Grid, Form, Segment, Button, Header, Message, Icon } from "semantic-ui-react"
 import { Link } from 'react-router-dom'
 import firebase from '../../firebase'
+import md5 from "md5"
 import uniqBy from 'lodash/uniqBy'
 
 class Register extends Component {
@@ -9,9 +10,10 @@ class Register extends Component {
     email: 'dennis@gmail.com',
     errors: [],
     loading: false,
-    password: '12345',
-    passwordConfirmation: '12345',
+    password: '123456',
+    passwordConfirmation: '123456',
     username: 'dennis',
+    usersRef: firebase.database().ref('users')
   }
 
   isFormValid = () => {
@@ -84,23 +86,46 @@ class Register extends Component {
         .then(createdUser => {
           console.log('createdUser', createdUser)
 
-          this.setState({
-          	loading: false
+          // update the user profile
+          createdUser.user.updateProfile({
+            displayName: this.state.username,
+            photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
           })
-        })
-        .catch(error => {
-          const uniqueErrors =  uniqBy([...this.state.errors, error], "message")
+            .then(() => {
+              this.saveUser(createdUser)
+                .then(() => {
+                  console.log('user saved')
 
-          this.setState({
-            errors: uniqueErrors,
-            loading: false
-          })
+                  this.setState({
+                    loading: false
+                  })
+                })
+            })
+            .catch(this.handlePromiseError)
+
         })
+        .catch(this.handlePromiseError)
     }
+  }
+
+  saveUser = createdUser => {
+    return this.state.usersRef.child(createdUser.user.uid).set({
+      name: createdUser.user.displayName,
+      avatar: createdUser.user.photoURL
+    })
   }
 
   handleInputError = (errors, inputName) => {
     return errors.some(error => error.message.toLowerCase().includes(inputName)) ? 'error' : ''
+  }
+
+  handlePromiseError = error => {
+    const uniqueErrors = uniqBy([...this.state.errors, error], "message")
+
+    this.setState({
+      errors: uniqueErrors,
+      loading: false
+    })
   }
 
   displayErrors = (errors) => {
