@@ -2,36 +2,40 @@ import React, { Component } from 'react'
 import { Grid, Form, Segment, Button, Header, Message, Icon } from "semantic-ui-react"
 import { Link } from 'react-router-dom'
 import firebase from '../../firebase'
+import uniqBy from 'lodash/uniqBy'
 
 class Register extends Component {
   state = {
-    username: 'dennis',
     email: 'dennis@gmail.com',
-    password: '123',
-    passwordConfirmation: '123',
-    errors: []
+    errors: [],
+    loading: false,
+    password: '12345',
+    passwordConfirmation: '12345',
+    username: 'dennis',
   }
 
   isFormValid = () => {
-    let errors = []
     let error
 
     if (this.isFormEmpty(this.state)) {
       error = { message: 'Fill in all fields' }
+      const uniqueErrors = uniqBy([...this.state.errors, error], "message")
 
-      this.setState({ errors: [...errors, error] })
+      this.setState({ errors: uniqueErrors })
 
       return false
     } else if (this.isPasswordLengthInvalid(this.state)) {
       error = { message: 'Password must have at least 6 characters' }
+      const uniqueErrors = uniqBy([...this.state.errors, error], "message")
 
-      this.setState({ errors: [...errors, error] })
+      this.setState({ errors: uniqueErrors })
 
       return false
     } else if (this.isTwoPasswordsNotEqual(this.state)) {
       error = { message: 'The two passwords does not match' }
+      const uniqueErrors = uniqBy([...this.state.errors, error], "message")
 
-      this.setState({ errors: [...errors, error] })
+      this.setState({ errors: uniqueErrors })
 
       return false
     } else {
@@ -64,8 +68,14 @@ class Register extends Component {
   }
 
   handleSubmit = (event) => {
+    event.preventDefault()
+
     if (this.isFormValid()) {
-      event.preventDefault()
+      // reset error messages
+      this.setState({
+      	errors: [],
+        loading: true
+      })
 
       // create user account in firebase
       firebase
@@ -73,11 +83,24 @@ class Register extends Component {
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(createdUser => {
           console.log('createdUser', createdUser)
+
+          this.setState({
+          	loading: false
+          })
         })
-        .catch(err => {
-          console.log('err', err)
+        .catch(error => {
+          const uniqueErrors =  uniqBy([...this.state.errors, error], "message")
+
+          this.setState({
+            errors: uniqueErrors,
+            loading: false
+          })
         })
     }
+  }
+
+  handleInputError = (errors, inputName) => {
+    return errors.some(error => error.message.toLowerCase().includes(inputName)) ? 'error' : ''
   }
 
   displayErrors = (errors) => {
@@ -88,9 +111,10 @@ class Register extends Component {
     const {
       email,
       errors,
+      loading,
       password,
       passwordConfirmation,
-      username,
+      username
     } = this.state
 
     return (
@@ -115,6 +139,7 @@ class Register extends Component {
                 iconPosition='left'
                 placeholder='Username'
                 value={username}
+                className={this.handleInputError(errors, 'username')}
                 onChange={this.handleChange}/>
 
               {/* email field */}
@@ -126,6 +151,7 @@ class Register extends Component {
                 iconPosition='left'
                 placeholder='Email Address'
                 value={email}
+                className={this.handleInputError(errors, 'email')}
                 onChange={this.handleChange}/>
 
               {/* password field */}
@@ -137,6 +163,7 @@ class Register extends Component {
                 iconPosition='left'
                 placeholder='Password'
                 value={password}
+                className={this.handleInputError(errors, 'password')}
                 onChange={this.handleChange}/>
 
               {/* password confirmation field */}
@@ -148,9 +175,16 @@ class Register extends Component {
                 iconPosition='left'
                 placeholder='Password Confirmation'
                 value={passwordConfirmation}
+                className={this.handleInputError(errors, 'password')}
                 onChange={this.handleChange}/>
 
-              <Button color='orange' fluid size='large'>
+              <Button
+                disabled={loading}
+                className={loading ? 'loading' : ''}
+                color='orange'
+                fluid
+                size='large'
+              >
                 Submit
               </Button>
             </Segment>
