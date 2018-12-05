@@ -1,7 +1,7 @@
 /* React family */
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import { createStore } from 'redux'
+import { createStore, bindActionCreators } from 'redux'
 import { Provider, connect } from 'react-redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router-dom'
@@ -29,7 +29,7 @@ class Root extends Component {
   componentDidMount () {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        // add the user retrieved back from firebase to Redux state
+        // add the user retrieved from firebase to Redux state
         this.props.setUser(user)
 
         // redirect to home page
@@ -49,7 +49,15 @@ class Root extends Component {
   }
 }
 
-const RootWithAuth = withRouter(connect(null, { setUser })(Root))
+const mapDispatchToProps = dispatch => {
+  return (
+    bindActionCreators({
+      setUser
+    }, dispatch)
+  )
+}
+
+const RootWithAuth = withRouter(connect(null, mapDispatchToProps)(Root))
 
 ReactDOM.render(
   <Provider store={store}>
