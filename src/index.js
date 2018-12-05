@@ -1,14 +1,27 @@
+/* React family */
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
+import { createStore } from 'redux'
+import { Provider, connect } from 'react-redux'
+import { composeWithDevTools } from 'redux-devtools-extension'
+import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router-dom'
+
+/* utility libraries */
+import firebase from "./firebase"
+import registerServiceWorker from './registerServiceWorker'
+
+import { setUser } from './actions'
+import rootReducer from "./reducers"
+
+/* React components */
 import App from './components/App'
 import Login from './components/Auth/Login'
 import Register from './components/Auth/Register'
-import registerServiceWorker from './registerServiceWorker'
-import firebase from "./firebase"
-
-import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router-dom'
 
 import 'semantic-ui-css/semantic.min.css'
+
+// create a store
+const store = createStore(rootReducer, composeWithDevTools())
 
 class Root extends Component {
   // monitor when the authentication state change,
@@ -16,6 +29,10 @@ class Root extends Component {
   componentDidMount () {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
+        // add the user retrieved back from firebase to Redux state
+        this.props.setUser(user)
+
+        // redirect to home page
         this.props.history.push('/')
       }
     })
@@ -32,11 +49,13 @@ class Root extends Component {
   }
 }
 
-const RootWithAuth = withRouter(Root)
+const RootWithAuth = withRouter(connect(null, { setUser })(Root))
 
 ReactDOM.render(
-  <Router>
-    <RootWithAuth/>
-  </Router>
+  <Provider store={store}>
+    <Router>
+      <RootWithAuth/>
+    </Router>
+  </Provider>
   , document.getElementById('root'))
 registerServiceWorker()
