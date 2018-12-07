@@ -17,6 +17,7 @@ import rootReducer from "./reducers"
 import App from './components/App'
 import Login from './components/Auth/Login'
 import Register from './components/Auth/Register'
+import Spinner from './components/UI/Spinner'
 
 import 'semantic-ui-css/semantic.min.css'
 
@@ -24,9 +25,9 @@ import 'semantic-ui-css/semantic.min.css'
 const store = createStore(rootReducer, composeWithDevTools())
 
 class Root extends Component {
-  // monitor when the authentication state change,
-  // if a user is successfully logged in, redirect the user to home page
   componentDidMount () {
+    // monitor when the authentication state change,
+    // if a user is successfully logged in, redirect the user to home page
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         // add the user retrieved from firebase to Redux state
@@ -39,15 +40,21 @@ class Root extends Component {
   }
 
   render () {
-    return (
+    const { isLoading } = this.props;
+
+    return isLoading ? <Spinner /> : (
       <Switch>
-        <Route exact path="/" component={App}/>
-        <Route path="/login" component={Login}/>
-        <Route path="/register" component={Register}/>
+        <Route exact path="/" component={App} />
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
       </Switch>
     )
   }
 }
+
+const mapStateToProps = state => ({
+  isLoading: state.user.isLoading
+})
 
 const mapDispatchToProps = dispatch => {
   return (
@@ -57,13 +64,16 @@ const mapDispatchToProps = dispatch => {
   )
 }
 
-const RootWithAuth = withRouter(connect(null, mapDispatchToProps)(Root))
+// withRouter() HOC passes "match", "location" and "history" object to props
+// connect() HOC passes state and actions to props
+const RootWithAuth = withRouter(connect(mapStateToProps, mapDispatchToProps)(Root))
 
 ReactDOM.render(
   <Provider store={store}>
     <Router>
-      <RootWithAuth/>
+      <RootWithAuth />
     </Router>
   </Provider>
   , document.getElementById('root'))
+
 registerServiceWorker()
