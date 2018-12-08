@@ -1,12 +1,25 @@
 import React, { Component } from 'react'
-import styles from './App.module.css'
+import { Grid } from 'semantic-ui-react'
+import ColorPanel from './ColorPanel/ColorPanel'
+import SidePanel from './SidePanel/SidePanel'
+import Messages from './Messages/Messages'
+import MetaPanel from './MetaPanel/MetaPanel'
 
 class App extends Component {
   render () {
     return (
-      <div className={styles.app}>
-        App
-      </div>
+      <Grid columns="equal" padded style={{ background: '#eee' }}>
+        <ColorPanel />
+        <SidePanel />
+
+        <Grid.Column style={{ marginLeft: 320 }}>
+          <Messages />
+        </Grid.Column>
+
+        <Grid.Column width={4}>
+          <MetaPanel />
+        </Grid.Column>
+      </Grid>
     )
   }
 }
