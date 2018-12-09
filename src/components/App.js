@@ -5,10 +5,12 @@ import SidePanel from './SidePanel/SidePanel'
 import Messages from './Messages/Messages'
 import MetaPanel from './MetaPanel/MetaPanel'
 
+import "./app.css"
+
 class App extends Component {
   render () {
     return (
-      <Grid columns="equal" padded style={{ background: '#eee' }}>
+      <Grid columns="equal" padded style={{ background: '#eee' }} className="app">
         <ColorPanel />
         <SidePanel />
 
