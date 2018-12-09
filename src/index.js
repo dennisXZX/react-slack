@@ -36,9 +36,11 @@ class Root extends Component {
         // redirect to home page
         this.props.history.push('/')
       } else {
-        this.props.history.push('/login')
-
+        // clear the user from Redux state
         this.props.clearUser()
+
+        // redirect to login page
+        this.props.history.push('/login')
       }
     })
   }
