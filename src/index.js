@@ -10,7 +10,7 @@ import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router
 import firebase from "./firebase"
 import registerServiceWorker from './registerServiceWorker'
 
-import { setUser } from './actions'
+import { setUser, clearUser } from './actions'
 import rootReducer from "./reducers"
 
 /* React components */
@@ -35,6 +35,10 @@ class Root extends Component {
 
         // redirect to home page
         this.props.history.push('/')
+      } else {
+        this.props.history.push('/login')
+
+        this.props.clearUser()
       }
     })
   }
@@ -59,7 +63,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => {
   return (
     bindActionCreators({
-      setUser
+      setUser,
+      clearUser
     }, dispatch)
   )
 }
