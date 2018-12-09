@@ -28,6 +28,7 @@ class Root extends Component {
   componentDidMount () {
     // monitor when the authentication state change,
     // if a user is successfully logged in, redirect the user to home page
+    // else redirect to the login page
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         // add the user retrieved from firebase to Redux state

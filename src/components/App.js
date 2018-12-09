@@ -15,6 +15,7 @@ class App extends Component {
     return (
       <Grid columns="equal" padded style={{ background: '#eee' }} className="app">
         <ColorPanel />
+
         <SidePanel currentUser={currentUser} />
 
         <Grid.Column style={{ marginLeft: 320 }}>
