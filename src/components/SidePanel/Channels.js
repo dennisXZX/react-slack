@@ -11,6 +11,24 @@ class Channels extends Component {
     modal: false
   }
 
+  componentDidMount () {
+    this.addListeners()
+  }
+
+  addListeners = () => {
+    let loadedChannels = []
+
+    // listen for data change at the 'channels' node
+    // callback will be triggered for the initial data and whenever the data changes
+    this.state.channelsRef.on('child_added', snap => {
+      loadedChannels.push(snap.val())
+
+      this.setState({
+      	channels: loadedChannels
+      })
+    })
+  }
+
   addChannel = () => {
     const { channelsRef, channelName, channelDetails } = this.state
     const { currentUser: user } = this.props
@@ -44,6 +62,19 @@ class Channels extends Component {
         console.error(err)
       })
   }
+
+  displayChannels = channels => (
+    channels.length > 0 && channels.map(channel => (
+      <Menu.Item
+        key={channel.id}
+        onClick={() => console.log(channel)}
+        name={channel.name}
+        style={{ opacity: 0.7 }}
+      >
+        # {channel.name}
+      </Menu.Item>
+    ))
+  )
 
   handleSubmit = event => {
     event.preventDefault()
@@ -87,6 +118,7 @@ class Channels extends Component {
           </Menu.Item>
 
           {/* Channels */}
+          {this.displayChannels(channels)}
         </Menu.Menu>
 
         <Modal basic open={modal}>
