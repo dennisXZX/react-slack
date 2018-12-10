@@ -20,6 +20,10 @@ class Channels extends Component {
     this.addListeners()
   }
 
+  componentWillUnmount () {
+    this.removeListeners()
+  }
+
   // listen for data change at the 'channels' node
   addListeners = () => {
     let loadedChannels = []
@@ -32,6 +36,11 @@ class Channels extends Component {
       	channels: loadedChannels
       }, () => this.setFirstChannel())
     })
+  }
+
+  removeListeners = () => {
+    // remove the Firebase database listeners
+    this.state.channelsRef.off()
   }
 
   setFirstChannel = () => {
