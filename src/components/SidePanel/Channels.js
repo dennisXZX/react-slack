@@ -1,31 +1,49 @@
 import React, { Component, Fragment } from 'react'
 import firebase from '../../firebase'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { setCurrentChannel } from '../../actions'
 import { Menu, Icon, Modal, Form, Input, Button } from 'semantic-ui-react'
 
 class Channels extends Component {
   state = {
+    activeChannel: '',
     channels: [],
     channelName: '',
     channelDetails: '',
     channelsRef: firebase.database().ref('channels'),
-    modal: false
+    modal: false,
+    initialLoad: true
   }
 
   componentDidMount () {
     this.addListeners()
   }
 
+  // listen for data change at the 'channels' node
   addListeners = () => {
     let loadedChannels = []
 
-    // listen for data change at the 'channels' node
     // callback will be triggered for the initial data and whenever the data changes
     this.state.channelsRef.on('child_added', snap => {
       loadedChannels.push(snap.val())
 
       this.setState({
       	channels: loadedChannels
-      })
+      }, () => this.setFirstChannel())
+    })
+  }
+
+  setFirstChannel = () => {
+    const firstChannel = this.state.channels[0]
+
+    if (this.state.initialLoad && this.state.channels.length > 0) {
+      this.props.setCurrentChannel(firstChannel)
+      this.setActiveChannel(firstChannel)
+    }
+
+    this.setState({
+    	initialLoad: false
     })
   }
 
@@ -63,13 +81,24 @@ class Channels extends Component {
       })
   }
 
+  setActiveChannel = channel => {
+    this.setState({ activeChannel: channel.id })
+  }
+
+  changeChannel = channel => {
+    this.props.setCurrentChannel(channel)
+
+    this.setActiveChannel(channel)
+  }
+
   displayChannels = channels => (
     channels.length > 0 && channels.map(channel => (
       <Menu.Item
         key={channel.id}
-        onClick={() => console.log(channel)}
+        onClick={() => this.changeChannel(channel)}
         name={channel.name}
         style={{ opacity: 0.7 }}
+        active={channel.id === this.state.activeChannel}
       >
         # {channel.name}
       </Menu.Item>
@@ -160,4 +189,12 @@ class Channels extends Component {
   }
 }
 
-export default Channels
+const mapDispatchToProps = dispatch => {
+  return (
+    bindActionCreators({
+      setCurrentChannel
+    }, dispatch)
+  )
+}
+
+export default connect(null, mapDispatchToProps)(Channels)
