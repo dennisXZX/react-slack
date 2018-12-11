@@ -19,7 +19,7 @@ class Messages extends Component {
 
         <Segment>
           <Comment.Group className="messages">
-            {/* Messages */}
+            {/* Display Messages */}
           </Comment.Group>
         </Segment>
 
