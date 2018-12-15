@@ -8,7 +8,6 @@ class MessagesHeader extends Component {
       searchLoading, isPrivateChannel
     } = this.props
 
-    console.log(searchLoading)
     return (
       <Segment clearing>
         {/* Channel Title */}
