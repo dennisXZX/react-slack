@@ -6,7 +6,7 @@ class ProgressBar extends Component {
     const { uploadState, percentUploaded } = this.props
 
     return (
-      uploadState && (
+      uploadState === 'uploading' && (
         <Progress
           className="progress__bar"
           percent={percentUploaded}
