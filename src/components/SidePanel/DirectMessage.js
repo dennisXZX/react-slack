@@ -7,6 +7,7 @@ import { bindActionCreators } from 'redux'
 
 class DirectMessage extends Component {
   state = {
+    activeChannel: '',
     users: [],
     usersRef: firebase.database().ref('users'),
     connectedRef: firebase.database().ref('.info/connected'),
@@ -85,6 +86,11 @@ class DirectMessage extends Component {
 
     this.props.setCurrentChannel(channelData)
     this.props.setPrivateChannel(true)
+    this.setActiveChannel(user.uid)
+  }
+
+  setActiveChannel = userId => {
+    this.setState({ activeChannel: userId })
   }
 
   getChannelId = userId => {
@@ -95,7 +101,7 @@ class DirectMessage extends Component {
   }
 
   render () {
-    const { users } = this.state
+    const { users, activeChannel } = this.state
 
     return (
       <Menu.Menu className="menu">
@@ -109,6 +115,7 @@ class DirectMessage extends Component {
         {
           users.map(user => (
             <Menu.Item
+              active={user.uid === activeChannel}
               key={user.uid}
               onClick={() => this.changeChannel(user)}
               style={{ opacity: 0.7, fontStyle: 'italic' }}
