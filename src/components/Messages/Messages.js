@@ -8,6 +8,7 @@ import firebase from '../../firebase'
 class Messages extends Component {
   state = {
     messagesRef: firebase.database().ref('messages'),
+    privateMessageRef: firebase.database().ref('privateMessages'),
     messages: [],
     messagesLoading: true,
     numUniqueUsers: '',
@@ -30,8 +31,9 @@ class Messages extends Component {
 
   addMessageListener = channelId => {
     let loadedMessages = []
+    const ref = this.getMessagesRef()
 
-    this.state.messagesRef.child(channelId).on('child_added', snap => {
+    ref.child(channelId).on('child_added', snap => {
       loadedMessages.push(snap.val())
 
       this.setState({
@@ -41,6 +43,13 @@ class Messages extends Component {
 
       this.countUniqueUsers(loadedMessages)
     })
+  }
+
+  getMessagesRef = () => {
+    const { messagesRef, privateMessageRef } = this.state
+    const { isPrivateChannel } = this.props
+
+    return isPrivateChannel ? privateMessageRef : messagesRef
   }
 
   handleSearchChange = event => {
@@ -95,14 +104,18 @@ class Messages extends Component {
     ))
   )
 
-  displayChannelName = channel => channel ? `#${channel.name}` : ''
+  displayChannelName = channel => {
+    return channel
+           ? `${this.props.isPrivateChannel ? '@' : '#'}${channel.name}`
+           : ''
+  }
 
   render () {
     const {
       messagesRef, messages, numUniqueUsers,
       searchTerm, searchResults, searchLoading
     } = this.state
-    const { currentChannel, currentUser } = this.props
+    const { currentChannel, currentUser, isPrivateChannel } = this.props
 
     return (
       <Fragment>
@@ -111,6 +124,7 @@ class Messages extends Component {
           numUniqueUsers={numUniqueUsers}
           handleSearchChange={this.handleSearchChange}
           searchLoading={searchLoading}
+          isPrivateChannel={isPrivateChannel}
         />
 
         <Segment>
@@ -127,6 +141,8 @@ class Messages extends Component {
           messagesRef={messagesRef}
           currentChannel={currentChannel}
           currentUser={currentUser}
+          isPrivateChannel={isPrivateChannel}
+          getMessagesRef={this.getMessagesRef}
         />
       </Fragment>
     )

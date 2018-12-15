@@ -10,7 +10,7 @@ import "./app.css"
 
 class App extends Component {
   render () {
-    const { currentUser, currentChannel } = this.props
+    const { currentUser, currentChannel, isPrivateChannel } = this.props
 
     return (
       <Grid columns="equal" padded style={{ background: '#eee' }} className="app">
@@ -26,6 +26,7 @@ class App extends Component {
             key={currentChannel && currentChannel.id}
             currentChannel={currentChannel}
             currentUser={currentUser}
+            isPrivateChannel={isPrivateChannel}
           />
         </Grid.Column>
 
@@ -39,7 +40,8 @@ class App extends Component {
 
 const mapStateToProps = state => ({
   currentUser: state.user.currentUser,
-  currentChannel: state.channel.currentChannel
+  currentChannel: state.channel.currentChannel,
+  isPrivateChannel: state.channel.isPrivateChannel
 })
 
 export default connect(mapStateToProps)(App)

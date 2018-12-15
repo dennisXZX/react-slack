@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import firebase from '../../firebase'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { setCurrentChannel } from '../../actions'
+import { setCurrentChannel, setPrivateChannel } from '../../actions'
 import { Menu, Icon, Modal, Form, Input, Button } from 'semantic-ui-react'
 
 class Channels extends Component {
@@ -95,9 +95,9 @@ class Channels extends Component {
   }
 
   changeChannel = channel => {
-    this.props.setCurrentChannel(channel)
-
     this.setActiveChannel(channel)
+    this.props.setCurrentChannel(channel)
+    this.props.setPrivateChannel(false)
   }
 
   displayChannels = channels => (
@@ -201,7 +201,8 @@ class Channels extends Component {
 const mapDispatchToProps = dispatch => {
   return (
     bindActionCreators({
-      setCurrentChannel
+      setCurrentChannel,
+      setPrivateChannel
     }, dispatch)
   )
 }
