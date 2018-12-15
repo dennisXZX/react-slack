@@ -9,7 +9,8 @@ class Messages extends Component {
   state = {
     messagesRef: firebase.database().ref('messages'),
     messages: [],
-    messagesLoading: true
+    messagesLoading: true,
+    numUniqueUsers: ''
   }
 
   componentDidMount () {
@@ -34,6 +35,26 @@ class Messages extends Component {
       	messages: loadedMessages,
         messagesLoading: false
       })
+
+      this.countUniqueUsers(loadedMessages)
+    })
+  }
+
+  countUniqueUsers = messages => {
+    const uniqueUsers = messages.reduce((acc, message) => {
+      if (!acc.includes(message.user.name)) {
+        acc.push(message.user.name)
+      }
+
+      return acc
+    }, [])
+
+    const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0
+
+    const numUniqueUsers = `${uniqueUsers.length} user${plural ? 's' : ''}`
+
+    this.setState({
+      numUniqueUsers
     })
   }
 
@@ -47,13 +68,18 @@ class Messages extends Component {
     ))
   )
 
+  displayChannelName = channel => channel ? `#${channel.name}` : ''
+
   render () {
-    const { messagesRef, messages } = this.state
+    const { messagesRef, messages, numUniqueUsers } = this.state
     const { currentChannel, currentUser } = this.props
 
     return (
       <Fragment>
-        <MessagesHeader />
+        <MessagesHeader
+          channelName={this.displayChannelName(currentChannel)}
+          numUniqueUsers={numUniqueUsers}
+        />
 
         <Segment>
           <Comment.Group className="messages">
