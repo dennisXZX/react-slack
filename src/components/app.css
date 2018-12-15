@@ -7,6 +7,11 @@ body,
     overflow: hidden;
 }
 
+/* SidePanel.js */
+.menu {
+    padding-bottom: 2em;
+}
+
 /* Messages.js */
 .messages {
     height: 70vh;
