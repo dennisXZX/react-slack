@@ -163,8 +163,6 @@ class Channels extends Component {
     let count = 0
 
     this.state.notifications.forEach(notification => {
-      console.log('notification.id', notification.id)
-      console.log('channel.id', channel.id)
       if (notification.id === channel.id) {
         count = notification.count
       }
