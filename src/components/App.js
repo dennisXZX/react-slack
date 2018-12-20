@@ -33,6 +33,7 @@ class App extends Component {
         <Grid.Column width={4}>
           <MetaPanel
             key={currentChannel && currentChannel.id}
+            currentChannel={currentChannel}
             isPrivateChannel={isPrivateChannel}
           />
         </Grid.Column>
