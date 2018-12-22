@@ -14,11 +14,13 @@ class App extends Component {
       currentUser,
       currentChannel,
       isPrivateChannel,
-      userPosts
+      userPosts,
+      primaryColor,
+      secondaryColor
     } = this.props
 
     return (
-      <Grid columns="equal" padded style={{ background: '#eee' }} className="app">
+      <Grid columns="equal" padded style={{ background: secondaryColor }} className="app">
         <ColorPanel
           key={currentUser && currentUser.name}
           currentUser={currentUser}
@@ -27,6 +29,7 @@ class App extends Component {
         <SidePanel
           key={currentUser && currentUser.uid}
           currentUser={currentUser}
+          primaryColor={primaryColor}
         />
 
         <Grid.Column style={{ marginLeft: 320 }}>
@@ -55,7 +58,9 @@ const mapStateToProps = state => ({
   currentUser: state.user.currentUser,
   currentChannel: state.channel.currentChannel,
   isPrivateChannel: state.channel.isPrivateChannel,
-  userPosts: state.channel.userPosts
+  userPosts: state.channel.userPosts,
+  primaryColor: state.colors.primaryColor,
+  secondaryColor: state.colors.secondaryColor
 })
 
 export default connect(mapStateToProps)(App)
