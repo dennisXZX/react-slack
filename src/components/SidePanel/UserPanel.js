@@ -1,11 +1,15 @@
 import React, { Component } from 'react'
 import firebase from "../../firebase"
 import { Grid, Header, Icon, Dropdown, Image, Modal, Input, Button } from 'semantic-ui-react'
+import AvatarEditor from 'react-avatar-editor'
 
 class UserPanel extends Component {
   state = {
     user: this.props.currentUser,
-    modal: false
+    modal: false,
+    previewImage: '',
+    croppedImage: '',
+    blob: ''
   }
 
   openModal = () => this.setState({ modal: true })
@@ -40,10 +44,39 @@ class UserPanel extends Component {
       .then(() => console.log('Signed out!'))
   }
 
+  handleChange = event => {
+    const file = event.target.files[0]
+    const reader = new FileReader()
+
+    if (file) {
+      reader.readAsDataURL(file)
+      reader.addEventListener('load', () => {
+        this.setState({
+        	previewImage: reader.result
+        })
+      })
+    }
+  }
+
+  handleCropImage = () => {
+    if (this.avatarEditor) {
+      this.avatarEditor.getImageScaledToCanvas().toBlob(blob => {
+        let imageUrl = URL.createObjectURL(blob)
+
+        this.setState({
+          croppedImage: imageUrl,
+          blob
+        })
+      })
+    }
+  }
+
   render () {
     const {
       user,
-      modal
+      modal,
+      previewImage,
+      croppedImage
     } = this.state
 
     const {
@@ -83,32 +116,54 @@ class UserPanel extends Component {
                 type="file"
                 label="New Avatar"
                 name="previewImage"
+                onChange={this.handleChange}
               />
 
               <Grid centered stackable columns={2}>
                 <Grid.Row centered>
                   <Grid.Column className="ui center aligned grid">
-                    {/* Image Preview */}
+                    {previewImage && (
+                      <AvatarEditor
+                        ref={node => (this.avatarEditor = node)}
+                        image={previewImage}
+                        width={120}
+                        height={120}
+                        border={50}
+                        scale={1.2}
+                      />
+                    )}
                   </Grid.Column>
 
                   <Grid.Column>
-                    {/* Cropped Image Preview */}
+                    {croppedImage && (
+                      <Image
+                        style={{ margin: '3.5em auto' }}
+                        width={100}
+                        height={100}
+                        src={croppedImage}
+                      />
+                    )}
                   </Grid.Column>
                 </Grid.Row>
               </Grid>
             </Modal.Content>
 
             <Modal.Actions>
-              <Button
-                color="green"
-                inverted
-              >
-                <Icon name="save" /> Change Avatar
-              </Button>
+              {
+                croppedImage
+                  && (
+                    <Button
+                      color="green"
+                      inverted>
+                      <Icon name="save" /> Change Avatar
+                    </Button>
+                )
+              }
 
               <Button
                 color="green"
                 inverted
+                onClick={this.handleCropImage}
               >
                 <Icon name="image" /> Preview
               </Button>
