@@ -4,6 +4,7 @@ import firebase from '../../firebase'
 import MessagesHeader from './MessagesHeader'
 import MessageForm from './MessageForm'
 import Message from './Message'
+import Typing from './Typing'
 import { Segment, Comment } from 'semantic-ui-react'
 import { setUserPosts } from '../../actions'
 import { bindActionCreators } from 'redux'
@@ -215,6 +216,9 @@ class Messages extends Component {
                 ? this.displayMessages(searchResults)
                 : this.displayMessages(messages)
             }
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span className="user__typing">dennis is typing</span> <Typing />
+            </div>
           </Comment.Group>
         </Segment>
 
