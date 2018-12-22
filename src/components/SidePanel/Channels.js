@@ -8,12 +8,14 @@ import { Menu, Icon, Modal, Form, Input, Button, Label } from 'semantic-ui-react
 class Channels extends Component {
   state = {
     activeChannel: '',
+    user: this.props.currentUser,
     channel: null,
     channels: [],
     channelName: '',
     channelDetails: '',
     channelsRef: firebase.database().ref('channels'),
     messagesRef: firebase.database().ref('messages'),
+    typingRef: firebase.database().ref('typing'),
     notifications: [],
     modal: false,
     initialLoad: true
@@ -102,7 +104,7 @@ class Channels extends Component {
 
   addChannel = () => {
     const { channelsRef, channelName, channelDetails } = this.state
-    const { currentUser: user } = this.props
+    const { user } = this.state
 
     // generate a unique identifier for each channel
     const key = channelsRef.push().key
@@ -140,6 +142,10 @@ class Channels extends Component {
 
   changeChannel = channel => {
     this.setActiveChannel(channel)
+    this.state.typingRef
+      .child(this.state.channel.id)
+      .child(this.state.user.uid)
+      .remove()
     this.clearNotifications()
     this.props.setCurrentChannel(channel)
     this.props.setPrivateChannel(false)
