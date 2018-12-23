@@ -42,7 +42,12 @@ class MessageForm extends Component {
     })
   }
 
-  handleKeyDown = () => {
+  handleKeyDown = event => {
+    // check if ctrl + enter is pressed
+    if (event.ctrlKey && event.keyCode === 13) {
+      this.sendMessage()
+    }
+
     const {
       message,
       typingRef,
