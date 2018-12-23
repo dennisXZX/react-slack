@@ -4,6 +4,7 @@ import firebase from '../../firebase'
 import MessagesHeader from './MessagesHeader'
 import MessageForm from './MessageForm'
 import Message from './Message'
+import Skeleton from './Skeleton'
 import Typing from './Typing'
 import { Segment, Comment } from 'semantic-ui-react'
 import { setUserPosts } from '../../actions'
@@ -248,6 +249,20 @@ class Messages extends Component {
     ))
   )
 
+  displayMessagesSkeleton = loading => (
+    loading
+      ? (
+        <React.Fragment>
+          {[...Array(10)].map((_, i) => (
+            <Skeleton
+              key={i}
+            />
+          ))}
+        </React.Fragment>
+      )
+      : null
+  )
+
   render () {
     const {
       messagesRef,
@@ -259,7 +274,8 @@ class Messages extends Component {
       isChannelStarred,
       user,
       channel,
-      typingUsers
+      typingUsers,
+      messagesLoading
     } = this.state
     const { isPrivateChannel } = this.props
 
@@ -276,6 +292,7 @@ class Messages extends Component {
         />
 
         <Segment>
+          {this.displayMessagesSkeleton(messagesLoading)}
           <Comment.Group className="messages">
             {
               searchTerm
