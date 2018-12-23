@@ -310,6 +310,7 @@ class Messages extends Component {
           currentUser={user}
           isPrivateChannel={isPrivateChannel}
           getMessagesRef={this.getMessagesRef}
+          messagesLoading={messagesLoading}
         />
       </Fragment>
     )

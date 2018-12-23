@@ -53,7 +53,6 @@ class MessageForm extends Component {
       typingRef,
       channel,
       user,
-      emojiPicker
     } = this.state
 
     if (message) {
@@ -254,6 +253,8 @@ class MessageForm extends Component {
       emojiPicker
     } = this.state
 
+    const { messagesLoading } = this.props
+
     return (
       <Segment className="message__form">
         {emojiPicker && (
@@ -273,6 +274,7 @@ class MessageForm extends Component {
           onKeyDown={this.handleKeyDown}
           style={{ marginBottom: '0.7em' }}
           ref={node => (this.messageInputRef = node)}
+          disabled={messagesLoading}
           label={
             <Button
               icon={emojiPicker ? 'close' : 'add'}
