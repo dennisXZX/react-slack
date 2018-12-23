@@ -20,7 +20,7 @@ class App extends Component {
     } = this.props
 
     return (
-      <Grid columns="equal" padded style={{ background: secondaryColor }} className="app">
+      <Grid columns="equal" padded style={{ background: secondaryColor, paddingTop: '20px' }} className="app">
         <ColorPanel
           key={currentUser && currentUser.name}
           currentUser={currentUser}

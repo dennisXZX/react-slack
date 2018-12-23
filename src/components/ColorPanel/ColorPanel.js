@@ -116,12 +116,12 @@ class ColorPanel extends Component {
           <Modal.Header>Choose App Colors</Modal.Header>
           <Modal.Content>
             <Segment inverted>
-              <Label content="Primary Color" />
+              <Label content="Primary Color" style={{ marginBottom: '10px' }} />
               <SliderPicker color={primary} onChange={this.handleChangePrimary} />
             </Segment>
 
             <Segment inverted>
-              <Label content="Secondary Color" />
+              <Label content="Secondary Color" style={{ marginBottom: '10px' }} />
               <SliderPicker color={secondary} onChange={this.handleChangeSecondary} />
             </Segment>
           </Modal.Content>
